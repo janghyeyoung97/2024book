@@ -50,12 +50,14 @@ st.title("중복 도서 검출기")
 st.image("엑셀선택.jpg")
 
 # 안내 메시지 추가
-st.write("나이스에서 다운 받으실때 반드시 exel data로 다운받아주세요")
+st.write("나이스에서 다운 받으실때 반드시 XLS data로 다운받아주세요")
 
 # 파일 업로드
 uploaded_file = st.file_uploader("독서활동 상황 엑셀 파일을 업로드하세요", type=['xlsx', 'xls'])
 st.write("1. 100% 동일한 도서를 찾아줍니다")
 st.write("2. 저자명이 동일하거나, 유사한 도서를 찾아줍니다. 학생 이름 확인하시고 수정부탁드립니다.")
+st.write("3. 새로고침하면 다 날라갑니다!! 주의해주세요!!")
+st.write("4. 오류가 있을 수 밖에 없습니다.. 꼭 한번 더 확인해주세요!")
 
 if uploaded_file:
     # 파일 읽기
