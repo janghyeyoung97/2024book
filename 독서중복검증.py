@@ -59,7 +59,6 @@ st.markdown("<span style='color:red; font-weight:bold;'>XLS data</span>로 다�
 st.subheader("2. 주의사항")
 st.write("(1) 새로고침하면 다 날라갑니다!! 주의해주세요!!")
 st.write("(2) 오류가 있을 수밖에 없습니다.. 꼭 한번 더 확인해주세요!")
-st.write("(3) 정확하지 않은 결과가 있을 수 있으니 꼭 확인 후 수정해주세요!")
 
 # 파일 업로드
 st.subheader("3. 독서활동상황 파일 업로드")
