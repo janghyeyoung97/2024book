@@ -14,31 +14,47 @@ def find_duplicates_by_student(df, similarity_threshold=0.7):
     df = df.dropna(subset=df.columns[:7], how='all')
     df = df[df['번호'] != '번호']  # 중간에 반복된 헤더 제거
 
+    # 빈 칸 채우기 (과목 또는 영역, 학년도, 학년, 학기)
+    columns_to_fill = ['과목 또는 영역', '학년도', '학년', '학기']
+    df[columns_to_fill] = df[columns_to_fill].ffill()
+
     # 학생별 데이터 그룹화
     grouped = df.groupby('번호')
 
     for student_id, group in grouped:
-        books = []
+        seen_books = {}
 
         # G열(도서 목록)에서 도서명(저자) 추출 및 병합
-        for entry in group['독서활동 상황'].dropna():
-            # 쉼표로 분리된 도서 목록 처리
-            extracted_books = [book.strip() for book in entry.split(',') if book.strip()]
-            books.extend(extracted_books)
+        for _, row in group.iterrows():
+            subject = row['과목 또는 영역']
+            year = row['학년도']
+            grade = row['학년']
+            semester = row['학기']
+            books = [book.strip() for book in str(row['독서활동 상황']).split(',') if book.strip()]
 
-        # 중복 검사
-        seen = {}
-        for idx, book in enumerate(books):
-            for seen_book in seen:
-                similarity = SequenceMatcher(None, book, seen_book).ratio()
-                if similarity >= similarity_threshold and book != seen_book:
-                    # 의심되는 도서 중복 추가
-                    suspicious_results.append(f"학생 번호 {student_id}: '{book}'와 '{seen_book}' 도서가 유사합니다.")
-            if book in seen:
-                # 중복된 도서가 발견되면 결과에 추가
-                results.append(f"학생 번호 {student_id}: '{book}' 도서가 중복 입력되었습니다.")
-            else:
-                seen[book] = idx
+            for book in books:
+                # 중복 검사
+                if book in seen_books:
+                    # 중복된 도서가 발견되면 결과에 추가
+                    results.append({
+                        '학생 번호': student_id,
+                        '중복 도서명': book,
+                        '중복 도서 위치': f"{seen_books[book]}, {subject}/{year}/{grade}/{semester}"
+                    })
+                else:
+                    # 첫 번째로 등장한 도서 기록
+                    seen_books[book] = f"{subject}/{year}/{grade}/{semester}"
+
+                # 의심되는 도서 검사 (유사성 기준 적용)
+                for seen_book in seen_books:
+                    similarity = SequenceMatcher(None, book, seen_book).ratio()
+                    if similarity >= similarity_threshold and book != seen_book:
+                        suspicious_results.append({
+                            '학생 번호': student_id,
+                            '도서 A': book,
+                            '도서 B': seen_book,
+                            '중복 위치': f"{seen_books[seen_book]}, {subject}/{year}/{grade}/{semester}"
+                        })
 
     return results, suspicious_results
 
@@ -92,20 +108,36 @@ if uploaded_file:
         if '독서활동 상황' in df.columns:
             duplicates, suspicious_duplicates = find_duplicates_by_student(df)
 
-            # 결과 출력
+            # 결과 출력: 중복 도서
             st.subheader("중복 도서 결과")
             st.write("도서명이 100% 동일한 경우 나타납니다.")
             if duplicates:
+                current_student = None
                 for result in duplicates:
-                    st.write(result)
+                    if current_student != result['학생 번호']:
+                        if current_student is not None:
+                            st.write("")  # 줄바꿈 추가
+                        current_student = result['학생 번호']
+                        st.markdown(f"#### **학생 번호 {current_student}**")
+                    st.write(f"- 도서명: '{result['중복 도서명']}'")
+                    st.write(f"- 위치: {result['중복 도서 위치']}")
             else:
                 st.write("중복이 의심되는 도서가 없습니다.")
 
+            # 결과 출력: 중복 의심 도서
             st.subheader("중복 의심 도서 결과")
             st.write("저자명이 동일하거나, 띄어쓰기를 제외한 책 제목이 동일하거나, 3글자 이상 유사한 경우가 나타납니다. 이상이 없는 경우 무시하고, 이상이 있는 경우 수정이 필요합니다.")
             if suspicious_duplicates:
+                current_student = None
                 for result in suspicious_duplicates:
-                    st.write(result)
+                    if current_student != result['학생 번호']:
+                        if current_student is not None:
+                            st.write("")  # 줄바꿈 추가
+                        current_student = result['학생 번호']
+                        st.markdown(f"#### **학생 번호 {current_student}**")
+                    st.write(f"- 도서 A: '{result['도서 A']}'")
+                    st.write(f"- 도서 B: '{result['도서 B']}'")
+                    st.write(f"- 위치: {result['중복 위치']}")
             else:
                 st.write("중복이 의심되는 도서가 없습니다.")
         else:
