@@ -48,13 +48,18 @@ st.title("중복 도서 검출기")
 # 사용 방법
 st.subheader("1. 사용 방법")
 
-# 이미지 추가
-st.image("엑셀선택.jpg")
+# 가로 배치: 1*2 구조로 설명과 이미지를 추가
+col1, col2 = st.columns(2)
 
-# 텍스트 추가
-st.write("나이스에서 다운 받으실 때 반드시 ")
-st.markdown("<span style='color:red; font-weight:bold;'>XLS data</span>로 다운받아주세요", unsafe_allow_html=True)
-st.write("파일을 다운받으신 후 열어서 B열의 학생 이름 열을 통째로 삭제해주세요! ")
+# 왼쪽: (1) 설명과 '엑셀선택.jpg'
+with col1:
+    st.markdown("(1) 나이스에서 다운 받으실 때 반드시 **<span style='color:red; font-weight:bold;'>XLS data</span>**로 다운받아주세요", unsafe_allow_html=True)
+    st.image("엑셀선택.jpg", use_container_width=True)
+
+# 오른쪽: (2) 설명과 '행삭제.jpg'
+with col2:
+    st.markdown("(2) 파일을 다운받으신 후 열어서 **<span style='color:red; font-weight:bold;'>B열</span>의 학생 이름 열을 **<span style='color:red; font-weight:bold;'>통째로 삭제</span>**해주세요!", unsafe_allow_html=True)
+    st.image("행삭제.jpg", use_container_width=True)
 
 # 주의사항
 st.subheader("2. 주의사항")
@@ -89,6 +94,7 @@ if uploaded_file:
 
             # 결과 출력
             st.subheader("중복 도서 결과")
+            st.write("도서명이 100% 동일한 경우 나타납니다.")
             if duplicates:
                 for result in duplicates:
                     st.write(result)
@@ -96,6 +102,7 @@ if uploaded_file:
                 st.write("중복이 의심되는 도서가 없습니다.")
 
             st.subheader("중복 의심 도서 결과")
+            st.write("저자명이 동일하거나, 띄어쓰기를 제외한 책 제목이 동일하거나, 3글자 이상 유사한 경우가 나타납니다. 이상이 없는 경우 무시하고, 이상이 있는 경우 수정이 필요합니다.")
             if suspicious_duplicates:
                 for result in suspicious_duplicates:
                     st.write(result)
