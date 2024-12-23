@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from difflib import SequenceMatcher
 
-
 # 중복 도서 검출 함수
 def find_duplicates_by_student(df, similarity_threshold=0.7):
     results = []
@@ -46,18 +45,27 @@ def find_duplicates_by_student(df, similarity_threshold=0.7):
 # Streamlit 앱 시작
 st.title("중복 도서 검출기")
 
+# 사용 방법
+st.subheader("1. 사용 방법")
+
 # 이미지 추가
 st.image("엑셀선택.jpg")
 
-# 안내 메시지 추가
-st.write("나이스에서 다운 받으실때 반드시 XLS data로 다운받아주세요")
+# 텍스트 추가
+st.write("나이스에서 다운 받으실 때 반드시 ")
+st.markdown("<span style='color:red; font-weight:bold;'>XLS data</span>로 다운받아주세요", unsafe_allow_html=True)
+
+# 주의사항
+st.subheader("2. 주의사항")
+st.write("(1) 새로고침하면 다 날라갑니다!! 주의해주세요!!")
+st.write("(2) 오류가 있을 수밖에 없습니다.. 꼭 한번 더 확인해주세요!")
+st.write("(3) 정확하지 않은 결과가 있을 수 있으니 꼭 확인 후 수정해주세요!")
+st.write("(4) 이상한 부분이 있으면 관리자에게 문의해주세요.")
 
 # 파일 업로드
+st.subheader("3. 독서활동상황 파일 업로드")
 uploaded_file = st.file_uploader("독서활동 상황 엑셀 파일을 업로드하세요", type=['xlsx', 'xls'])
-st.write("1. 100% 동일한 도서를 찾아줍니다")
-st.write("2. 저자명이 동일하거나, 유사한 도서를 찾아줍니다. 학생 이름 확인하시고 수정부탁드립니다.")
-st.write("3. 새로고침하면 다 날라갑니다!! 주의해주세요!!")
-st.write("4. 오류가 있을 수 밖에 없습니다.. 꼭 한번 더 확인해주세요!")
+st.write("파일을 업로드하면 중복 도서가 검출됩니다.")
 
 if uploaded_file:
     # 파일 읽기
