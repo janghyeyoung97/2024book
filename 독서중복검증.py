@@ -54,6 +54,7 @@ st.image("엑셀선택.jpg")
 # 텍스트 추가
 st.write("나이스에서 다운 받으실 때 반드시 ")
 st.markdown("<span style='color:red; font-weight:bold;'>XLS data</span>로 다운받아주세요", unsafe_allow_html=True)
+st.write("파일을 다운받으신 후 열어서 B열의 학생 이름 열을 통째로 삭제해주세요! ")
 
 # 주의사항
 st.subheader("2. 주의사항")
